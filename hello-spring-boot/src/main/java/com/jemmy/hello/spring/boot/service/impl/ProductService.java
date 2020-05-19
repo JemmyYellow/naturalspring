@@ -23,7 +23,7 @@ public class ProductService implements IProductService {
     @Autowired
     ProductMapper productMapper;
 
-    private ProductVO product2vo(Product p){
+    private ProductVO product2vo(Product p) {
         ProductVO productVO = new ProductVO();
         productVO.setId(p.getId());
         productVO.setName(p.getName());
@@ -31,25 +31,26 @@ public class ProductService implements IProductService {
         productVO.setPrice(p.getPrice());
         return productVO;
     }
+
     /**
      * 商品查询
      *
      * @param keyword  关键词
      * @param pageNum  --
      * @param pageSize --
-     * @param orderBy  后三个参数 github 封装好了
+     * @param orderby  后三个参数 github 封装好了 desc asc
      * @return
      */
     @Override
-    public ServerResponse list(String keyword, Integer pageNum, Integer pageSize, String orderBy) {
+    public ServerResponse list(String keyword, Integer pageNum, Integer pageSize, String orderby) {
 
         PageHelper.startPage(pageNum, pageSize);
-        if(!StringUtils.isBlank(keyword)){
-            keyword = "%"+keyword+"%";
+        if (!StringUtils.isBlank(keyword)) {
+            keyword = "%" + keyword + "%";
         }
-        if(StringUtils.isNotBlank(orderBy)){
-            String[] strs = orderBy.split("_");
-            if(strs.length!=2){
+        if (StringUtils.isNotBlank(orderby)) {
+            String[] strs = orderby.split("_");
+            if (strs.length != 2) {
                 return ServerResponse.createServerResponseByFail(ResponseCode.PARAM_ERROR.getCode(),
                         ResponseCode.PARAM_ERROR.getMsg());
             }
@@ -57,7 +58,7 @@ public class ProductService implements IProductService {
         }
         List<Product> productList = productMapper.list(keyword);
         List<ProductVO> productVOS = new ArrayList<>();
-        for(Product p : productList){
+        for (Product p : productList) {
             ProductVO vo = product2vo(p);
             productVOS.add(vo);
         }

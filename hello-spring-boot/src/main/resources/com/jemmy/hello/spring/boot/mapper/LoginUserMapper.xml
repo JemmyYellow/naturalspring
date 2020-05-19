@@ -70,6 +70,13 @@
     where username = #{username}
   </select>
 
+  <select id="selectByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+
+    select id, username, status
+    from jemmy_loginuser
+    where status = #{status}
+  </select>
+
   <update id="allSignOut">
 
     update jemmy_loginuser

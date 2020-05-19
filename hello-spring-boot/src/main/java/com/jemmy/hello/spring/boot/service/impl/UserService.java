@@ -150,6 +150,11 @@ public class UserService implements IUserService {
         return null;
     }
 
+    /**
+     * 注销
+     * @param username
+     * @return
+     */
     @Override
     public ServerResponse signOut(String username){
         int result = loginUserMapper.signOutByUsername(username);

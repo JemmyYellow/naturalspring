@@ -19,9 +19,9 @@ public class ProductController {
     public ServerResponse list(String keyword,
                                @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                @RequestParam(value = "pageSize", defaultValue = "10")Integer pageSize,
-                               String orderBy){
+                               String orderby){
 
-        ServerResponse serverResponse = productService.list(keyword, pageNum, pageSize, orderBy);
+        ServerResponse serverResponse = productService.list(keyword, pageNum, pageSize, orderby);
         return serverResponse;
     }
 }

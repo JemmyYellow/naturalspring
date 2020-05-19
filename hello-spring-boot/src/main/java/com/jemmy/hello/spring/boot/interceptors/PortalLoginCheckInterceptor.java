@@ -1,11 +1,9 @@
 package com.jemmy.hello.spring.boot.interceptors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jemmy.hello.spring.boot.common.Const;
 import com.jemmy.hello.spring.boot.common.ResponseCode;
 import com.jemmy.hello.spring.boot.dao.LoginUserMapper;
 import com.jemmy.hello.spring.boot.pojo.LoginUser;
-import com.jemmy.hello.spring.boot.pojo.User;
 import com.jemmy.hello.spring.boot.utils.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,9 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 
