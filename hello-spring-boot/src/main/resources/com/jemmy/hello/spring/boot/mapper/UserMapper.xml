@@ -60,9 +60,9 @@
     from jemmy_user
   </select>
 
-  <select id="findByUsername" parameterType="string" resultType="int">
+  <select id="findByUsername" parameterType="string" resultMap="BaseResultMap">
 
-    select count(*)
+    select *
     from jemmy_user where username=#{username}
   </select>
 
@@ -83,6 +83,13 @@
     set
     password = #{now}
     where id = #{id}
+  </update>
+
+  <update id="changePhoneById" parameterType="map">
+    update jemmy_user
+    set
+    phone = #{newphone}
+    where id = #{userId}
   </update>
 
 </mapper>

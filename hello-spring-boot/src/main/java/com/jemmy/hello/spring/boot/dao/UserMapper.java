@@ -49,7 +49,7 @@ public interface UserMapper {
     /**
      * 根据用户名查找
      */
-    int findByUsername(@Param("username") String username);
+    User findByUsername(@Param("username") String username);
 
     /**
      * 根据用户名和密码查找
@@ -65,5 +65,10 @@ public interface UserMapper {
      * 根据id更改密码
      */
     int changePasswordById(@Param("id") Integer id, @Param("now") String now);
+
+    /**
+     * 根据id更改手机号
+     */
+    int changePhoneById(@Param("userId") Integer id, @Param("newphone") String newPhone);
 
 }

@@ -1,6 +1,8 @@
 package com.jemmy.hello.spring.boot.dao;
 
 import com.jemmy.hello.spring.boot.pojo.Cart;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface CartMapper {
@@ -43,4 +45,19 @@ public interface CartMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(Cart record);
+
+    /**
+     * 根据商品id查找购物车
+     */
+    Cart findByProductId(@Param("productId") Integer productId);
+
+    /**
+     * 根据商品id更新
+     */
+    int updateByProductId(@Param("productId") Integer productId, @Param("count") Integer count);
+
+    /**
+     * 根据用户id查询未选中的个数
+     */
+    int selectUnCheckedCountByUserId(@Param("userId") Integer userId);
 }

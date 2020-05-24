@@ -7,6 +7,7 @@ import com.jemmy.hello.spring.boot.service.IUserService;
 import com.jemmy.hello.spring.boot.utils.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
@@ -34,9 +35,8 @@ public class UserController {
         return userService.registerLogic(user);
     }
 
-    @RequestMapping(value = "changePwd.do")
+    @RequestMapping(value = "changepwd.do")
     public ServerResponse changePassword(Integer id, String old, String now) {
-
 
         return userService.changepwdLogic(id, old, now);
     }
@@ -63,5 +63,9 @@ public class UserController {
         return userService.updateUserLogic(user);
     }
 
+    @RequestMapping(value = "changephone.do")
+    public ServerResponse changePhone(@RequestParam(value = "userid") Integer userId, String newphone){
+        return userService.changePhone(userId, newphone);
+    }
 
 }

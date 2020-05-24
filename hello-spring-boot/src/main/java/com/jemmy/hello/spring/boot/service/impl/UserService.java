@@ -25,9 +25,9 @@ public class UserService implements IUserService {
     /**
      * 登录逻辑
      *
-     * @param username
-     * @param password
-     * @return
+     * @param username 用户名
+     * @param password 密码
+     * @return ServerResponse
      */
     @Override
     public ServerResponse loginLogic(String username, String password) {
@@ -45,8 +45,8 @@ public class UserService implements IUserService {
         }
 
         //step2.查看用户名是否存在
-        Integer i = userMapper.findByUsername(username);
-        if (i == null || i == 0) {
+        User user1 = userMapper.findByUsername(username);
+        if (null == user1) {
             //用户名不存在
             return ServerResponse.createServerResponseByFail(ResponseCode.USERNAME_NOT_EXISTS.getCode(),
                     ResponseCode.USERNAME_NOT_EXISTS.getMsg());
@@ -63,7 +63,7 @@ public class UserService implements IUserService {
         //step4.返回结果
         //LoginUser增加
         int signOut = loginUserMapper.allSignOut();
-        if (signOut < 0) {
+        if (signOut <= 0) {
             return ServerResponse.createServerResponseByFail(ResponseCode.LOGIN_FAIL.getCode(),
                     ResponseCode.LOGIN_FAIL.getMsg());
         }
@@ -88,8 +88,8 @@ public class UserService implements IUserService {
     /**
      * 注册逻辑
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return ServerResponse
      */
     @Override
     public ServerResponse registerLogic(User user) {
@@ -121,8 +121,8 @@ public class UserService implements IUserService {
         }
 
         //2.判断用户名是否存在
-        Integer i = userMapper.findByUsername(username);
-        if (i != null && i > 0) {//用户名存在
+        User user1 = userMapper.findByUsername(username);
+        if (null != user1) {//用户名存在
             return ServerResponse.createServerResponseByFail(ResponseCode.USERNAME_EXISTS.getCode(),
                     ResponseCode.USERNAME_EXISTS.getMsg());
         }
@@ -154,8 +154,8 @@ public class UserService implements IUserService {
     /**
      * 注销
      *
-     * @param username
-     * @return
+     * @param username 用户名
+     * @return ServerResponse
      */
     @Override
     public ServerResponse signOut(String username) {
@@ -167,6 +167,38 @@ public class UserService implements IUserService {
         return ServerResponse.createServerResponseBySuccess();
     }
 
+    /**
+     * 更改手机
+     * @param userId 用户id
+     * @param newphone 新手机号
+     * @return ServerResponse
+     */
+    @Override
+    public ServerResponse changePhone(Integer userId, String newphone) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if(user == null){
+            return ServerResponse.createServerResponseByFail(ResponseCode.USERID_NOT_EXISTS.getCode(),
+                    ResponseCode.USERID_NOT_EXISTS.getMsg());
+        }
+        if(user.getPhone().equals(newphone)){
+            return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_IS_SAME.getCode(),
+                    ResponseCode.PHONE_IS_SAME.getMsg());
+        }
+        int result = userMapper.changePhoneById(userId, newphone);
+        if(result <= 0){//改不了？
+            return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_CHANGE_FAIL.getCode(),
+                    ResponseCode.PHONE_CHANGE_FAIL.getMsg());
+        }
+        return ServerResponse.createServerResponseBySuccess();
+    }
+
+    /**
+     * 更改密码
+     * @param id 用户id
+     * @param old 旧密码
+     * @param now 新密码
+     * @return ServerResponse
+     */
     @Override
     public ServerResponse changepwdLogic(Integer id, String old, String now) {
 
@@ -176,15 +208,11 @@ public class UserService implements IUserService {
                     ResponseCode.PARAMETER_EMPTY.getMsg());
         }
 
-        //id不对
-//        List<LoginUser> list = loginUserMapper.selectByStatus(0);
-//        if(list)
-
         //若原密码不对
         boolean same = userMapper.selectByPrimaryKey(id).getPassword().equals(old);
         if (!same) {
-            return ServerResponse.createServerResponseByFail(ResponseCode.PASSWORD_ERROR.getCode(),
-                    ResponseCode.PASSWORD_ERROR.getMsg());
+            return ServerResponse.createServerResponseByFail(ResponseCode.OLD_PASSWORD_WRONG.getCode(),
+                    ResponseCode.OLD_PASSWORD_WRONG.getMsg());
         }
 
         //若新旧密码一样
@@ -195,7 +223,7 @@ public class UserService implements IUserService {
 
         //改密码
         int result = userMapper.changePasswordById(id, now);
-        if (result == 0) {  //改不了？
+        if (result <= 0) {  //改不了？
             return ServerResponse.createServerResponseByFail(ResponseCode.CHANGE_PASSWORD_FAIL.getCode(),
                     ResponseCode.CHANGE_PASSWORD_FAIL.getMsg());
         }

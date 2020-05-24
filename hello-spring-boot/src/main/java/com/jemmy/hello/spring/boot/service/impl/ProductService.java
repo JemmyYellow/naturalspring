@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -57,15 +56,33 @@ public class ProductService implements IProductService {
             PageHelper.orderBy(strs[0] + " " + strs[1]);
         }
         List<Product> productList = productMapper.list(keyword);
-        List<ProductVO> productVOS = new ArrayList<>();
-        for (Product p : productList) {
-            ProductVO vo = product2vo(p);
-            productVOS.add(vo);
-        }
+//        List<ProductVO> productVOS = new ArrayList<>();
+//        for (Product p : productList) {
+//            ProductVO vo = product2vo(p);
+//            productVOS.add(vo);
+//        }
 
         PageInfo pageInfo = new PageInfo(productList);
-        pageInfo.setList(productVOS);
+        pageInfo.setList(productList);
 
         return ServerResponse.createServerResponseBySuccess(pageInfo);
+    }
+
+    /**
+     * 根据商品id查询
+     * @param productId 商品id
+     * @return
+     */
+    public ServerResponse selectByPrimaryKey(Integer productId){
+        if(productId == null || productId == 0){
+            return ServerResponse.createServerResponseByFail(ResponseCode.PARAM_ERROR.getCode(),
+                    ResponseCode.PARAM_ERROR.getMsg());
+        }
+        Product product = productMapper.selectByPrimaryKey(productId);
+        if(product == null){
+            return ServerResponse.createServerResponseByFail(ResponseCode.PRODUCT_NOT_EXISTS.getCode(),
+                    ResponseCode.PRODUCT_NOT_EXISTS.getMsg());
+        }
+        return ServerResponse.createServerResponseBySuccess(product);
     }
 }

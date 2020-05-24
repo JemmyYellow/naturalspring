@@ -29,4 +29,9 @@ public interface IUserService {
      * 注销
      */
     public ServerResponse signOut(String username);
+
+    /**
+     * 修改手机号
+     */
+    public ServerResponse changePhone(Integer userId, String newphone);
 }

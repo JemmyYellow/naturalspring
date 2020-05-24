@@ -32,6 +32,18 @@ public enum ResponseCode {
 
     SIGN_OUT_FAIL(15, "注销失败"),
 
+    CART_UPDATE_FAIL(16, "购物车更改失败"),
+
+    PRODUCT_NOT_EXISTS(17, "商品不存在"),
+
+    OLD_PASSWORD_WRONG(18, "原密码不对"),
+
+    USERID_NOT_EXISTS(19, "用户ID不存在"),
+
+    PHONE_IS_SAME(20, "请输入新的手机号"),
+
+    PHONE_CHANGE_FAIL(21, "手机更改失败"),
+
     ;
 
     private int code;
