@@ -44,6 +44,28 @@ public enum ResponseCode {
 
     PHONE_CHANGE_FAIL(21, "手机更改失败"),
 
+    ALL_CHECK_FAIL(22, "全选执行失败"),
+
+    CART_ID_PRODUCT_NOT_EXISTS(23, "购物车用户id不存在或商品不存在"),
+
+    CHECK_FAIL(24, "更改选中状态失败"),
+
+    CART_ERROR(25, "购物车商品异常"),
+
+    DELETE_CART_ZERO(26, "购物车为空或者清除失败"),
+
+    DELETE_CART_FAIL(26, "购物车商品移除失败"),
+
+    CART_NOT_SELECTED(27, "购物车为空或未选中商品"),
+
+    ORDER_INSERT_FAIL(28, "订单插入失败"),
+
+    ORDERVO_CREATE_FAIL(29, "订单VO创建失败"),
+
+    ORDER_LIST_CREATE_FAIL(30, "订单列表创建失败"),
+
+    ORDER_LIST_SELECT_FAIL(30, "查询订单列表失败"),
+
     ;
 
     private int code;

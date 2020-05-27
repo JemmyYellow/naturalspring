@@ -9,4 +9,5 @@ public class Const {
     public static final int CART_PRODUCT_CHECKED=1;
 
     public static final int CART_PRODUCT_UNCHECKED=0;
+
 }

@@ -49,15 +49,55 @@ public interface CartMapper {
     /**
      * 根据商品id查找购物车
      */
-    Cart findByProductId(@Param("productId") Integer productId);
+    Cart findProductByUserId(@Param("userId") Integer userId, @Param("productId") Integer productId);
 
     /**
-     * 根据商品id更新
+     * 根据商品数量
      */
-    int updateByProductId(@Param("productId") Integer productId, @Param("count") Integer count);
+    int updateQuantity(@Param("userId") Integer userId, @Param("productId") Integer productId, @Param("count") Integer count);
 
     /**
      * 根据用户id查询未选中的个数
      */
     int selectUnCheckedCountByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据用户id和商品id查询选中状态
+     */
+    int selectCheckedByUserIdAndProductId(@Param("userId") Integer userId, @Param("productId") Integer productId);
+
+    /**
+     * 根据用户Id查询
+     */
+    List<Cart> selectByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 全选或取消全选
+     */
+    int updateAllChecked(@Param("userId") Integer userId, @Param("check") Integer check);
+
+    /**
+     * 全选或取消全选
+     */
+    int updateChecked(@Param("userId") Integer userId, @Param("productId") Integer productId, @Param("check") Integer check);
+
+    /**
+     * 删除全部商品
+     */
+    int deleteAllByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 删除商品
+     */
+    int deleteByUserIdAndProductId(@Param("userId") Integer userId, @Param("productId") Integer productId);
+
+    /**
+     * 查找选中商品
+     */
+    List<Cart> findCartByUserIdAndChecked(@Param("userId") Integer userId);
+
+    /**
+     * 根据多个id删除
+     */
+    int deleteByIds(@Param("ids") List<Integer> ids);
 }

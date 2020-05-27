@@ -1,6 +1,8 @@
 package com.jemmy.hello.spring.boot.dao;
 
 import com.jemmy.hello.spring.boot.pojo.Order;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface OrderMapper {
@@ -43,4 +45,14 @@ public interface OrderMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(Order record);
+
+    /**
+     * 批量插入
+     */
+    int insertBatch(@Param("orderList") List<Order> record);
+
+    /**
+     * 根据用户id查询订单
+     */
+    List<Order> selectByUserId(@Param("userId") Integer userId);
 }

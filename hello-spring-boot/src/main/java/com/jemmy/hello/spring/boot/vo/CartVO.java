@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class CartVO {
-    private List<CartProductVO> data;
+    private List<CartProductVO> cartProductVOList;
     private Boolean allChecked;
     private BigDecimal cartTotalPrice;
 
-    public List<CartProductVO> getData() {
-        return data;
+    public List<CartProductVO> getCartProductVOList() {
+        return cartProductVOList;
     }
 
-    public void setData(List<CartProductVO> data) {
-        this.data = data;
+    public void setCartProductVOList(List<CartProductVO> cartProductVOList) {
+        this.cartProductVOList = cartProductVOList;
     }
 
     public Boolean getAllChecked() {

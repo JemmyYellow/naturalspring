@@ -55,7 +55,7 @@ CREATE TABLE `business`.`jemmy_order`  (
   `unit_price` decimal(20,2) DEFAULT NULL COMMENT '单价',
   `quantity` int(11) DEFAULT NULL COMMENT '数量',
   `total_price` decimal(20,2) DEFAULT NULL COMMENT '实际付款金额',
-  `status` int(11) DEFAULT NULL COMMENT '订单状态：0-已取消 10-未付款 20-已付款 40-已发货 50-交易成功 60-交易关闭',
+  `status` int(11) DEFAULT NULL COMMENT '订单状态：10-已取消 20-未付款 30-已付款 40-交易成功 50-交易关闭',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),

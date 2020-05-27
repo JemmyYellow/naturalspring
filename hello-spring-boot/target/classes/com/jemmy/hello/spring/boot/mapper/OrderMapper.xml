@@ -81,4 +81,44 @@
     quantity, total_price, status, create_time, update_time
     from jemmy_order
   </select>
+
+
+  <insert id="insertBatch" parameterType="list">
+    <!--
+      批量插入
+    -->
+    insert into jemmy_order (user_id, order_no,
+    product_id, product_name, product_image,
+    unit_price, quantity, total_price,
+    status, create_time, update_time
+    )
+    values
+    <foreach collection="orderList" item="order" separator=",">
+
+      (#{order.userId,jdbcType=INTEGER},
+      #{order.orderNo,jdbcType=BIGINT},
+      #{order.productId,jdbcType=INTEGER},
+      #{order.productName,jdbcType=VARCHAR},
+      #{order.productImage,jdbcType=VARCHAR},
+      #{order.unitPrice,jdbcType=DECIMAL},
+      #{order.quantity,jdbcType=INTEGER},
+      #{order.totalPrice,jdbcType=DECIMAL},
+      #{order.status,jdbcType=INTEGER},
+      now(),
+      now()
+      )
+
+    </foreach>
+
+  </insert>
+
+
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    <!--
+      根据用户id查询
+    -->
+    select id, user_id, order_no, product_id, product_name, product_image, unit_price,
+    quantity, total_price, status, create_time, update_time
+    from jemmy_order where user_id = #{userId}
+  </select>
 </mapper>

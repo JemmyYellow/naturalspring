@@ -61,23 +61,17 @@ public class UserService implements IUserService {
         }
 
         //step4.返回结果
-        //LoginUser增加
-        int signOut = loginUserMapper.allSignOut();
-        if (signOut <= 0) {
-            return ServerResponse.createServerResponseByFail(ResponseCode.LOGIN_FAIL.getCode(),
-                    ResponseCode.LOGIN_FAIL.getMsg());
-        }
         LoginUser loginUser = loginUserMapper.selectByUsername(username);
         if (loginUser == null) {
             int insert = loginUserMapper.putLoginUser(username);
-            if (insert == 0) {
+            if (insert <= 0) {
                 return ServerResponse.createServerResponseByFail(ResponseCode.LOGIN_FAIL.getCode(),
                         ResponseCode.LOGIN_FAIL.getMsg());
             }
         } else {
             loginUser.setStatus(0);
             int up = loginUserMapper.updateByPrimaryKey(loginUser);
-            if (up == 0) {
+            if (up <= 0) {
                 return ServerResponse.createServerResponseByFail(ResponseCode.LOGIN_FAIL.getCode(),
                         ResponseCode.LOGIN_FAIL.getMsg());
             }
@@ -109,12 +103,12 @@ public class UserService implements IUserService {
             return ServerResponse.createServerResponseByFail(ResponseCode.USERNAME_EMPTY.getCode(),
                     ResponseCode.USERNAME_EMPTY.getMsg());
         }
-        if (null == password || password.equals("")) {
+        if (StringUtils.isBlank(password)) {
             //
             return ServerResponse.createServerResponseByFail(ResponseCode.PASSWORD_EMPTY.getCode(),
                     ResponseCode.PASSWORD_EMPTY.getMsg());
         }
-        if (null == phone || phone.equals("")) {
+        if (StringUtils.isBlank(phone)) {
             //
             return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_EMPTY.getCode(),
                     ResponseCode.PHONE_EMPTY.getMsg());
@@ -142,7 +136,7 @@ public class UserService implements IUserService {
         }
 
         //注册成功
-        return ServerResponse.createServerResponseBySuccess();
+        return ServerResponse.createServerResponseBySuccess(user);
     }
 
     @Override
@@ -160,7 +154,7 @@ public class UserService implements IUserService {
     @Override
     public ServerResponse signOut(String username) {
         int result = loginUserMapper.signOutByUsername(username);
-        if (result == 0) {
+        if (result <= 0) {
             return ServerResponse.createServerResponseByFail(ResponseCode.SIGN_OUT_FAIL.getCode(),
                     ResponseCode.SIGN_OUT_FAIL.getMsg());
         }
@@ -169,23 +163,24 @@ public class UserService implements IUserService {
 
     /**
      * 更改手机
-     * @param userId 用户id
+     *
+     * @param userId   用户id
      * @param newphone 新手机号
      * @return ServerResponse
      */
     @Override
     public ServerResponse changePhone(Integer userId, String newphone) {
         User user = userMapper.selectByPrimaryKey(userId);
-        if(user == null){
+        if (user == null) {
             return ServerResponse.createServerResponseByFail(ResponseCode.USERID_NOT_EXISTS.getCode(),
                     ResponseCode.USERID_NOT_EXISTS.getMsg());
         }
-        if(user.getPhone().equals(newphone)){
+        if (user.getPhone().equals(newphone)) {
             return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_IS_SAME.getCode(),
                     ResponseCode.PHONE_IS_SAME.getMsg());
         }
         int result = userMapper.changePhoneById(userId, newphone);
-        if(result <= 0){//改不了？
+        if (result <= 0) {//改不了？
             return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_CHANGE_FAIL.getCode(),
                     ResponseCode.PHONE_CHANGE_FAIL.getMsg());
         }
@@ -194,7 +189,8 @@ public class UserService implements IUserService {
 
     /**
      * 更改密码
-     * @param id 用户id
+     *
+     * @param id  用户id
      * @param old 旧密码
      * @param now 新密码
      * @return ServerResponse

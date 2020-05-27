@@ -3,8 +3,11 @@ package com.jemmy.hello.spring.boot.interceptors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jemmy.hello.spring.boot.common.ResponseCode;
 import com.jemmy.hello.spring.boot.dao.LoginUserMapper;
+import com.jemmy.hello.spring.boot.dao.UserMapper;
 import com.jemmy.hello.spring.boot.pojo.LoginUser;
+import com.jemmy.hello.spring.boot.pojo.User;
 import com.jemmy.hello.spring.boot.utils.ServerResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -13,35 +16,51 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.List;
 
 
 @Component
 public class PortalLoginCheckInterceptor implements HandlerInterceptor {
-    /**在请求到达controller之前
+    /**
+     * 在请求到达controller之前
      *
-     * @param request
-     * @param response
-     * @param handler
      * @return true:可以通过拦截器 false:拦截请求
-     * @throws Exception
      */
 
     @Autowired
     LoginUserMapper loginUserMapper;
 
+    @Autowired
+    UserMapper userMapper;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-//        HttpSession session = request.getSession();
-//        User user = (User) session.getAttribute(Const.CURRENT_USER);
-//        if(user != null){
-//            return true;
-//        }
-        List<LoginUser> list = loginUserMapper.selectByStatus(0);
-        if(list != null && list.size()>0){
-            return true;
+        String username = request.getParameter("username");
+        if (StringUtils.isNotBlank(username)) {
+            LoginUser loginUser = loginUserMapper.selectByUsername(username);
+            if (loginUser != null) {
+                if (loginUser.getStatus() == 0)
+                    return true;
+            }
         }
+
+        String userIdStr = request.getParameter("userid");
+        if (StringUtils.isNotBlank(userIdStr)) {
+            Integer userId = Integer.valueOf(userIdStr);
+            User user = userMapper.selectByPrimaryKey(userId);
+            if(user != null){
+                String username2 = user.getUsername();
+                if(StringUtils.isNotBlank(username2)){
+                    LoginUser loginUser2 = loginUserMapper.selectByUsername(username2);
+                    if (loginUser2 != null) {
+                        if (loginUser2.getStatus() == 0)
+                            return true;
+                    }
+                }
+            }
+        }
+
+
 
         //用户未登录
         response.reset();
