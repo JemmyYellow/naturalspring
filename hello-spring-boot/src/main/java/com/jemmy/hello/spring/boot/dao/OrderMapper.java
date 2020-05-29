@@ -3,6 +3,7 @@ package com.jemmy.hello.spring.boot.dao;
 import com.jemmy.hello.spring.boot.pojo.Order;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface OrderMapper {
@@ -55,4 +56,24 @@ public interface OrderMapper {
      * 根据用户id查询订单
      */
     List<Order> selectByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据订单号查订单
+     */
+    List<Order> selectByOrderNo(@Param("orderNo") Long orderNo);
+
+    /**
+     * 根据用户id和订单号查订单
+     */
+    List<Order> selectByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
+
+    /**
+     * 根据用户id查订单号
+     */
+    List<Long> selectOrderNoByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据订单号更新订单状态
+     */
+    int updateOrderByPayed(@Param("orderNo") Long orderNo, @Param("status") Integer status);
 }

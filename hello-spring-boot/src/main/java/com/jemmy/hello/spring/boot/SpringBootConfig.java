@@ -21,10 +21,12 @@ public class SpringBootConfig implements WebMvcConfigurer {
         includeUrl.add("/portal/user/**");
         includeUrl.add("/portal/cart/**");
         includeUrl.add("/portal/order/**");
+        includeUrl.add("/portal/pay/**");
 
         List<String> excludeUrl = new ArrayList<>();
         excludeUrl.add("/portal/user/login.do");
         excludeUrl.add("/portal/user/register.do");
+        excludeUrl.add("/portal/pay/callback.do");
 
         registry.addInterceptor(portalLoginCheckInterceptor)
                 .addPathPatterns(includeUrl)   //添加需要拦截的路径

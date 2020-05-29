@@ -62,37 +62,39 @@ public class OrderService implements IOrderService {
         //生成订单号
         Long orderNo = generateOrderNo(userId);
         //生成订单列表
-        ServerResponse createOrderListResponse = createOrderList(cartList, orderNo);
+        ServerResponse createOrderListResponse = createOrderList(cartList, orderNo); //往订单表批量添加订单数据
         if(!createOrderListResponse.isSuccess()){
             return createOrderListResponse;
         }
-        List<Order> orderList = (List<Order>) createOrderListResponse.getData();
-
-        //计算总价格
-//        orderTotalPrice(orderList)
-        ////创建orderVO
-        Order o0 = orderList.get(0);
-        //将时间转化
-        Date createTime = DateUtil.string2Date(DateUtil.date2String(o0.getCreateTime()));
-        Date updateTime = DateUtil.string2Date(DateUtil.date2String(o0.getUpdateTime()));
-
-        //创建orderVO
-        OrderVO orderVO = createOrderVO(orderTotalPrice(orderList), userId, orderNo,
-                o0.getStatus(),
-                createTime,
-                updateTime,
-                orderList);
-//        if(orderVO == null){
-//            return ServerResponse.createServerResponseByFail(ResponseCode.ORDERVO_CREATE_FAIL.getCode(),
-//                    ResponseCode.ORDERVO_CREATE_FAIL.getMsg());
-//        }
-        //清空选中的购物车内容
+        //删除购物车
         deleteCartItem(cartList);
 
-        return ServerResponse.createServerResponseBySuccess(orderVO);
+//        if(cartList.get(0).getUserId() == 76){
+//            throw new BusinessException("测试");
+//        }
+        //获得订单列表
+        return getOrderList(userId);
     }
+
     /**
-    生成订单列表，往订单表批量添加订单数据
+     * 根据订单号查询订单
+     */
+    @Override
+    public ServerResponse findOrderByOrderNo(Long orderNo) {
+        if(orderNo == null || orderNo == 0L){
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDERNO_EMPTY.getCode(),
+                    ResponseCode.ORDERNO_EMPTY.getMsg());
+        }
+        List<Order> orderList = orderMapper.selectByOrderNo(orderNo);
+        if(orderList == null || orderList.size() == 0){
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_LIST_SELECT_FAIL.getCode(),
+                    ResponseCode.ORDER_LIST_SELECT_FAIL.getMsg());
+        }
+        return ServerResponse.createServerResponseBySuccess(orderList);
+    }
+
+    /**
+     * 生成订单列表，往订单表批量添加订单数据
      */
     private ServerResponse createOrderList(List<Cart> cartList, Long orderNo){
         List<Order> orderList = new ArrayList<>();
@@ -104,19 +106,20 @@ public class OrderService implements IOrderService {
             return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_LIST_CREATE_FAIL.getCode(),
                     ResponseCode.ORDER_LIST_CREATE_FAIL.getMsg());
         }
-        //List<Order>插入到订单表
+        //List<Order>插入到订单表,批量插入
         int insertCount = orderMapper.insertBatch(orderList);
         if(insertCount != orderList.size()){
             return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_INSERT_FAIL.getCode(),
                     ResponseCode.ORDER_INSERT_FAIL.getMsg());
         }
-        //查询订单表获得创建和更新时间
-        orderList = orderMapper.selectByUserId(orderList.get(0).getUserId());
-        if(orderList == null || orderList.size() == 0){
-            return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_LIST_SELECT_FAIL.getCode(),
-                    ResponseCode.ORDER_LIST_SELECT_FAIL.getMsg());
+        //查询订单表为获得订单VO做准备
+        List<Long> orderNoList = orderMapper.selectOrderNoByUserId(orderList.get(0).getUserId());
+//        orderList = orderMapper.selectByUserId(orderList.get(0).getUserId());
+        if(orderNoList == null || orderNoList.size() == 0){
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDERNO_SELECT_FAIL.getCode(),
+                    ResponseCode.ORDERNO_SELECT_FAIL.getMsg());
         }
-        return ServerResponse.createServerResponseBySuccess(orderList);
+        return ServerResponse.createServerResponseBySuccess(orderNoList);
     }
 
     private void deleteCartItem(List<Cart> cartList){
@@ -132,7 +135,12 @@ public class OrderService implements IOrderService {
         }
     }
 
-    private BigDecimal orderTotalPrice(List<Order> orderList){
+    /**
+     * 计算订单OrderVO总价格
+     * @param orderList 订单列表
+     * @return BigDecimal
+     */
+    private BigDecimal ordersTotalPrice(List<Order> orderList){
         BigDecimal result = new BigDecimal("0");
         for(Order order : orderList){
             result = BigDecUtil.add(String.valueOf(result.doubleValue()), String.valueOf(order.getTotalPrice().doubleValue()));
@@ -142,17 +150,10 @@ public class OrderService implements IOrderService {
 
     /**
      * 生成订单VO
-     * @param orderTotalPrice 订单总价
-     * @param userId 用户id
-     * @param orderNo 订单号
-     * @param status 订单状态
-     * @param createTime 创建时间
-     * @param updateTime 更新时间
-     * @param orderList 订单列表
      * @return OrderVO
      */
-    private OrderVO createOrderVO(BigDecimal orderTotalPrice, Integer userId, Long orderNo,
-                                  Integer status, Date createTime, Date updateTime, List<Order> orderList){
+    @Override
+    public OrderVO createOrderVO(List<Order> orderList){
 
         if(orderList == null || orderList.size()==0){
             throw new BusinessException("订单为空");
@@ -160,16 +161,64 @@ public class OrderService implements IOrderService {
 
         //给orderVO赋值
         OrderVO orderVO = new OrderVO();
-        orderVO.setUserId(userId);
-        orderVO.setOrderNo(orderNo);
-        orderVO.setTotalPrice(orderTotalPrice);
-        orderVO.setStatus(status);
-        orderVO.setCreateTime(createTime);
-        orderVO.setUpdateTime(updateTime);
+        Order order = orderList.get(0);
+        orderVO.setUserId(order.getUserId());
+        orderVO.setOrderNo(order.getOrderNo());
+        orderVO.setTotalPrice(ordersTotalPrice(orderList));
+        orderVO.setStatus(order.getStatus());
+        orderVO.setCreateTime(order.getCreateTime());
+        orderVO.setUpdateTime(order.getUpdateTime());
         orderVO.setOrderList(orderList);
-        orderVO.setStatusDesc(PayCodeAndDesc.getPayDesc(status));
+        orderVO.setStatusDesc(PayCodeAndDesc.getPayDesc(order.getStatus()));
         return orderVO;
     }
+
+    /**
+     * 查询订单
+     * @param userId 用户id
+     * @return ServerResponse
+     */
+    @Override
+    public ServerResponse getOrderList(Integer userId) {
+        if(userId == null){
+            return ServerResponse.createServerResponseByFail(ResponseCode.PARAMETER_EMPTY.getCode(),
+                    ResponseCode.PARAMETER_EMPTY.getMsg());
+        }
+        List<Long> orderNoList = orderMapper.selectOrderNoByUserId(userId);
+        if(orderNoList == null || orderNoList.size() == 0){
+            //订单号查询失败
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDERNO_SELECT_FAIL.getCode(),
+                    ResponseCode.ORDERNO_SELECT_FAIL.getMsg());
+        }
+
+        //根据订单号和用户id查
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for(Long no : orderNoList) {
+            List<Order> orderList = orderMapper.selectByUserIdAndOrderNo(userId, no);
+            if(orderList == null || orderList.size() == 0){
+                return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_LIST_SELECT_FAIL.getCode(),
+                        ResponseCode.ORDER_LIST_SELECT_FAIL.getMsg());
+            }
+            OrderVO orderVO = createOrderVO(orderList);
+            orderVOList.add(orderVO);
+        }
+
+        return ServerResponse.createServerResponseBySuccess(orderVOList);
+    }
+
+    /**
+     * 更新订单状态
+     */
+    @Override
+    public ServerResponse updateStatus(Long orderNo, Integer status) {
+        int count = orderMapper.updateOrderByPayed(orderNo, status);
+        if(count <= 0){
+            ServerResponse.createServerResponseByFail(ResponseCode.ORDER_UPDATE_FAIL.getCode(),
+                    ResponseCode.ORDER_UPDATE_FAIL.getMsg());
+        }
+        return ServerResponse.createServerResponseBySuccess();
+    }
+
 
     /**
      * 生成订单(套在循环体内)

@@ -112,13 +112,39 @@
 
   </insert>
 
-
-  <select id="selectByUserId" resultMap="BaseResultMap">
+  <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--
       根据用户id查询
     -->
     select id, user_id, order_no, product_id, product_name, product_image, unit_price,
     quantity, total_price, status, create_time, update_time
+    from jemmy_order where user_id = #{userId}
+  </select>
+
+  <select id="selectByOrderNo" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      根据订单号orderNo查询
+    -->
+    select id, user_id, order_no, product_id, product_name, product_image, unit_price,
+    quantity, total_price, status, create_time, update_time
+    from jemmy_order where order_no = #{orderNo}
+  </select>
+
+
+  <select id="selectByUserIdAndOrderNo" parameterType="map" resultMap="BaseResultMap">
+    <!--
+      根据用户id和订单号orderNo查询
+    -->
+    select id, user_id, order_no, product_id, product_name, product_image, unit_price,
+    quantity, total_price, status, create_time, update_time
+    from jemmy_order where order_no = #{orderNo} and user_id = #{userId}
+  </select>
+
+  <select id="selectOrderNoByUserId" parameterType="java.lang.Integer" resultType="java.lang.Long">
+    <!--
+      根据用户id查询订单号
+    -->
+    select distinct order_no
     from jemmy_order where user_id = #{userId}
   </select>
 </mapper>

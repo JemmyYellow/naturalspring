@@ -22,4 +22,9 @@ public class OrderController {
     public ServerResponse create(@RequestParam(value = "userid") Integer userId){
         return orderService.createOrder(userId);
     }
+
+    @RequestMapping(value = "list.do")
+    public ServerResponse list(@RequestParam(value = "userid") Integer userId){
+        return orderService.getOrderList(userId);
+    }
 }

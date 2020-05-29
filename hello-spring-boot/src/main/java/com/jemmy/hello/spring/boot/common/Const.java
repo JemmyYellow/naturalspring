@@ -10,4 +10,8 @@ public class Const {
 
     public static final int CART_PRODUCT_UNCHECKED=0;
 
+    public static final String HTTP_HOST_PORT="http://192.168.3.47:8080";
+
+    public static final String PORT="8080";
+
 }
