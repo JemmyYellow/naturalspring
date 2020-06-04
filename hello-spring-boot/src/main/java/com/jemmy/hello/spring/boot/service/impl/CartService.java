@@ -70,8 +70,53 @@ public class CartService implements ICartService {
         return ServerResponse.createServerResponseBySuccess();
     }
 
+
+    @Override
+    public ServerResponse add(Integer userId, Integer productId) {
+
+        if (productId == null || userId == null) {
+            return ServerResponse.createServerResponseByFail(ResponseCode.PARAMETER_EMPTY.getCode(),
+                    ResponseCode.PARAMETER_EMPTY.getMsg());
+        }
+
+        //查询购物车中是否有该商品
+        Cart cart = cartMapper.findProductByUserId(userId, productId);
+        if (cart != null) {
+            //更新数量
+            cart.setQuantity(cart.getQuantity()+1);
+            int result = cartMapper.updateQuantity(userId, cart.getProductId(), cart.getQuantity());
+            if (result <= 0) {
+                return ServerResponse.createServerResponseByFail(ResponseCode.CART_UPDATE_FAIL.getCode(),
+                        ResponseCode.CART_UPDATE_FAIL.getMsg());
+            }
+        } else {
+            //根据商品id查询商品信息
+            ServerResponse serverResponse1 = productService.selectByPrimaryKey(productId);
+            if (!serverResponse1.isSuccess()) {
+                //商品不存在
+                return serverResponse1;
+            } else {
+                //添加
+                Cart newCart = new Cart();
+                newCart.setUserId(userId);
+                newCart.setProductId(productId);
+                newCart.setChecked(1);
+                newCart.setQuantity(1);
+                int result = cartMapper.insert(newCart);
+                if (result <= 0) {//添加失败
+                    return ServerResponse.createServerResponseByFail(ResponseCode.CART_UPDATE_FAIL.getCode(),
+                            ResponseCode.CART_UPDATE_FAIL.getMsg());
+                }
+            }
+        }
+
+        //封装CartVO
+        CartVO cartVO = getCartVO(userId);
+        return ServerResponse.createServerResponseBySuccess(cartVO);
+    }
+
     /**
-     * 增加商品到购物车
+     * 更新购物车
      *
      * @param productId 商品id
      * @param count     商品数量

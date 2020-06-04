@@ -18,7 +18,7 @@ public class ProductController {
     @RequestMapping(value = "list.do")
     public ServerResponse list(String keyword,
                                @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                               @RequestParam(value = "pageSize", defaultValue = "10")Integer pageSize,
+                               @RequestParam(value = "pageSize", defaultValue = "12")Integer pageSize,
                                String orderby){
 
         ServerResponse serverResponse = productService.list(keyword, pageNum, pageSize, orderby);

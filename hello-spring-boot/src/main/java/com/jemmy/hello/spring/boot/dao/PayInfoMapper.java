@@ -1,6 +1,8 @@
 package com.jemmy.hello.spring.boot.dao;
 
 import com.jemmy.hello.spring.boot.pojo.PayInfo;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface PayInfoMapper {
@@ -43,4 +45,9 @@ public interface PayInfoMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(PayInfo record);
+
+    /**
+     * 根据订单号查询
+     */
+    PayInfo selectByOrderNo(@Param("orderNo") Long orderNo);
 }

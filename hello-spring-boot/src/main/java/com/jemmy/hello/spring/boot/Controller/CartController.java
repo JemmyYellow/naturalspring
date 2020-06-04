@@ -15,7 +15,7 @@ public class CartController {
     ICartService cartService;
 
     /**
-     * 添加商品到购物车
+     * 更新购物车
      *
      * @param productId 商品id
      * @param count     商品数量
@@ -27,6 +27,19 @@ public class CartController {
                                  Integer count) {
 
         return cartService.update(userId, productId, count);
+    }
+
+    /**
+     * 添加商品到购物车
+     *
+     * @param productId 商品id
+     * @return ServerResponse
+     */
+    @RequestMapping(value = "add.do")
+    public ServerResponse add(@RequestParam(value = "userid") Integer userId,
+                                 @RequestParam(value = "productid") Integer productId) {
+
+        return cartService.add(userId, productId);
     }
 
     /**

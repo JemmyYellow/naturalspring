@@ -36,9 +36,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "changepwd.do")
-    public ServerResponse changePassword(Integer id, String old, String now) {
+    public ServerResponse changePassword(Integer userid, String old, String now) {
 
-        return userService.changepwdLogic(id, old, now);
+        return userService.changepwdLogic(userid, old, now);
     }
 
     @RequestMapping(value = "signOut.do")

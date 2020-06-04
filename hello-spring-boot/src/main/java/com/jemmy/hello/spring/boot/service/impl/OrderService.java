@@ -73,7 +73,8 @@ public class OrderService implements IOrderService {
 //            throw new BusinessException("测试");
 //        }
         //获得订单列表
-        return getOrderList(userId);
+//        return getOrderList(userId);
+        return ServerResponse.createServerResponseBySuccess(orderNo);
     }
 
     /**
@@ -211,14 +212,23 @@ public class OrderService implements IOrderService {
      */
     @Override
     public ServerResponse updateStatus(Long orderNo, Integer status) {
+
+        int s = orderMapper.selectStatusByOrderNo(orderNo);
+        if(status == PayCodeAndDesc.ORDER_CLOSE && s <= PayCodeAndDesc.ORDER_PAYED){
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_CLOSE_FAIL.getCode(),
+                    ResponseCode.ORDER_CLOSE_FAIL.getMsg());
+        }
+        if(status == PayCodeAndDesc.ORDER_CLOSE && s == PayCodeAndDesc.ORDER_CLOSE){
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_ALREADY_CLOSED.getCode(),
+                    ResponseCode.ORDER_ALREADY_CLOSED.getMsg());
+        }
         int count = orderMapper.updateOrderByPayed(orderNo, status);
         if(count <= 0){
-            ServerResponse.createServerResponseByFail(ResponseCode.ORDER_UPDATE_FAIL.getCode(),
+            return ServerResponse.createServerResponseByFail(ResponseCode.ORDER_UPDATE_FAIL.getCode(),
                     ResponseCode.ORDER_UPDATE_FAIL.getMsg());
         }
         return ServerResponse.createServerResponseBySuccess();
     }
-
 
     /**
      * 生成订单(套在循环体内)

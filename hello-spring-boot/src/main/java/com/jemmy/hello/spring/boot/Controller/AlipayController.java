@@ -2,6 +2,7 @@ package com.jemmy.hello.spring.boot.Controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.jemmy.hello.spring.boot.pojo.PayInfo;
 import com.jemmy.hello.spring.boot.service.IPayService;
 import com.jemmy.hello.spring.boot.utils.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,13 +71,13 @@ public class AlipayController {
                 //验签通过
                 //处理业务逻辑
                 System.out.println("验签通过");
-
+                return payService.callbackLogic(signParam);
             }
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
 
-        String success = "success";
-        return success;
+        return "fail" ;
     }
+
 }

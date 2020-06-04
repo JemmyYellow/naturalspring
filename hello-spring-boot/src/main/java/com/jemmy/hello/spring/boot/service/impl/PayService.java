@@ -2,7 +2,10 @@ package com.jemmy.hello.spring.boot.service.impl;
 
 import com.jemmy.hello.spring.boot.common.PayCodeAndDesc;
 import com.jemmy.hello.spring.boot.common.ResponseCode;
+import com.jemmy.hello.spring.boot.common.TradeStatusEnum;
+import com.jemmy.hello.spring.boot.dao.PayInfoMapper;
 import com.jemmy.hello.spring.boot.pojo.Order;
+import com.jemmy.hello.spring.boot.pojo.PayInfo;
 import com.jemmy.hello.spring.boot.service.IOrderService;
 import com.jemmy.hello.spring.boot.service.IPayService;
 import com.jemmy.hello.spring.boot.utils.DateUtil;
@@ -34,6 +37,9 @@ public class PayService implements IPayService {
 
     @Autowired
     IOrderService orderService;
+
+    @Autowired
+    PayInfoMapper payInfoMapper;
     /**
      * 支付
      * @param userId 用户id
@@ -72,7 +78,6 @@ public class PayService implements IPayService {
         String sign = OrderInfoUtil2_0.getSign(params, RSA2_PRIVATE, true);
         final String orderInfo = orderParam + "&" + sign;
 
-
         return ServerResponse.createServerResponseBySuccess(orderInfo);
     }
 
@@ -85,6 +90,8 @@ public class PayService implements IPayService {
     public String callbackLogic(Map<String, String> stringMap) {
 
         final String success = "success";
+        final String fail = "fail";
+
         //获取订单号
         Long orderNo = Long.valueOf(stringMap.get("out_trade_no"));
         //校验订单号
@@ -95,7 +102,7 @@ public class PayService implements IPayService {
         //判断订单是否被修改
         List<Order> orderList = (List<Order>) orderResponse.getData();
         Order order = orderList.get(0);
-        if(order.getStatus() >= PayCodeAndDesc.ORDER_NOT_PAY){
+        if(order.getStatus() >= PayCodeAndDesc.ORDER_PAYED){
             //订单已支付
             return success;
         }
@@ -103,11 +110,42 @@ public class PayService implements IPayService {
         //获取订单的支付状态
         String trade_status = stringMap.get("trade_status");
         Date gmt_payment = DateUtil.string2Date(stringMap.get("gmt_payment")); // 交易付款时间
-//        orderService.updateStatus()
+        ServerResponse updateResponse = orderService.updateStatus(orderNo, TradeStatusEnum.statusOf(trade_status));
+        if(!updateResponse.isSuccess()){
+            return fail;
+        }
         //插入支付信息
+        PayInfo payInfo = new PayInfo();
+        payInfo.setOrderNo(order.getOrderNo());
+        payInfo.setUserId(order.getUserId());
+        payInfo.setPlatformNumber(stringMap.get("trade_no"));
+        payInfo.setPlatformStatus(trade_status);
 
+        PayInfo payInfo1 = findPayInfoByOrderNo(orderNo);
+        int resultCount = -1;
+        if(payInfo1 == null){
+             //为空,插入
+            resultCount = payInfoMapper.insert(payInfo);
+        } else {
+            //不为空，更新
+            payInfo.setId(payInfo1.getId());
+            resultCount = payInfoMapper.updateByPrimaryKey(payInfo);
+        }
+
+        if(resultCount == 0) {
+            return fail;
+        }
         //返回结果
 
-        return null;
+        return success;
+    }
+
+    /**
+     * 根据订单号查询支付信息
+     */
+    @Override
+    public PayInfo findPayInfoByOrderNo(Long orderNo){
+        PayInfo payInfo = payInfoMapper.selectByOrderNo(orderNo);
+        return payInfo;
     }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 public interface ICartService {
     public ServerResponse update(Integer userId, Integer productId, Integer count);
 
+    public ServerResponse add(Integer userId, Integer productId);
+
     public ServerResponse list(Integer userId);
 
     public ServerResponse check(Integer userId, Integer productId);

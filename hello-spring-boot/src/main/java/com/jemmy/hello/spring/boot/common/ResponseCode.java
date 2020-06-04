@@ -39,8 +39,10 @@ public enum ResponseCode {
     ORDER_USER_ID_ERROR(34, "订单用户ID不匹配"),
     ORDERNO_SELECT_FAIL(35, "订单号查询失败"),
     ORDER_UPDATE_FAIL(36, "订单更新失败"),
-
-
+    PAYINFO_SELECT_FAIL(37, "支付信息查询失败"),
+    USER_SELECT_FAIL(38, "用户查询失败"),
+    ORDER_CLOSE_FAIL(39, "订单未交易成功不可关闭"),
+    ORDER_ALREADY_CLOSED(40, "订单已经关闭,请勿重复关闭"),
     ;
 
     private int code;

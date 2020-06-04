@@ -160,4 +160,12 @@
     where order_no = #{orderNo,jdbcType=BIGINT}
   </update>
 
+
+  <select id="selectStatusByOrderNo" parameterType="java.lang.Long" resultType="int">
+    <!--
+      根据订单号查状态
+    -->
+    select distinct status
+    from jemmy_order where order_no = #{orderNo}
+  </select>
 </mapper>

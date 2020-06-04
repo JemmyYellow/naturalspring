@@ -65,7 +65,8 @@ public class ProductService implements IProductService {
         PageInfo pageInfo = new PageInfo(productList);
         pageInfo.setList(productList);
 
-        return ServerResponse.createServerResponseBySuccess(pageInfo);
+        return ServerResponse.createServerResponseBySuccess(productList);
+//        return ServerResponse.createServerResponseBySuccess(pageInfo);
     }
 
     /**

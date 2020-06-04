@@ -147,4 +147,25 @@
     select distinct order_no
     from jemmy_order where user_id = #{userId}
   </select>
+
+
+  <update id="updateOrderByPayed" parameterType="map">
+    <!--
+      根据订单号更新订单状态
+    -->
+    update jemmy_order
+    set
+    status = #{status,jdbcType=INTEGER},
+    update_time = now()
+    where order_no = #{orderNo,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectStatusByOrderNo" parameterType="java.lang.Long" resultType="int">
+    <!--
+      根据订单号查状态
+    -->
+    select distinct status
+    from jemmy_order where order_no = #{orderNo}
+  </select>
 </mapper>

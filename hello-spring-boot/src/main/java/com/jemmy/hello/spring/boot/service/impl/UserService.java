@@ -122,8 +122,8 @@ public class UserService implements IUserService {
         }
 
         //3.判断手机号是否存在
-        Integer i2 = userMapper.findByPhone(phone);
-        if (i2 != null && i2 > 0) {//手机存在
+        int i2 = userMapper.findByPhone(phone);
+        if (i2 > 0) {//手机存在
             return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_EXISTS.getCode(),
                     ResponseCode.PHONE_EXISTS.getMsg());
         }
@@ -134,7 +134,11 @@ public class UserService implements IUserService {
             return ServerResponse.createServerResponseByFail(ResponseCode.REGISTER_FAIL.getCode(),
                     ResponseCode.REGISTER_FAIL.getMsg());
         }
-
+        user = userMapper.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        if(user == null){
+            return ServerResponse.createServerResponseByFail(ResponseCode.USER_SELECT_FAIL.getCode(),
+                    ResponseCode.USER_SELECT_FAIL.getMsg());
+        }
         //注册成功
         return ServerResponse.createServerResponseBySuccess(user);
     }
@@ -178,6 +182,12 @@ public class UserService implements IUserService {
         if (user.getPhone().equals(newphone)) {
             return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_IS_SAME.getCode(),
                     ResponseCode.PHONE_IS_SAME.getMsg());
+        }
+        //判断手机号是否存在
+        int i2 = userMapper.findByPhone(newphone);
+        if (i2 > 0) {//手机存在
+            return ServerResponse.createServerResponseByFail(ResponseCode.PHONE_EXISTS.getCode(),
+                    ResponseCode.PHONE_EXISTS.getMsg());
         }
         int result = userMapper.changePhoneById(userId, newphone);
         if (result <= 0) {//改不了？

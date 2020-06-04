@@ -27,4 +27,14 @@ public class OrderController {
     public ServerResponse list(@RequestParam(value = "userid") Integer userId){
         return orderService.getOrderList(userId);
     }
+
+    @RequestMapping(value = "confirm.do")
+    public ServerResponse confirm(@RequestParam(value = "userid") Integer userId, @RequestParam(value = "orderno") Long orderNo){
+        return orderService.updateStatus(orderNo, 40);
+    }
+
+    @RequestMapping(value = "cancel.do")
+    public ServerResponse cancel(@RequestParam(value = "userid") Integer userId, @RequestParam(value = "orderno") Long orderNo){
+        return orderService.updateStatus(orderNo, 50);
+    }
 }

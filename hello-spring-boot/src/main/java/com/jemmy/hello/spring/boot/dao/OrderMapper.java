@@ -76,4 +76,9 @@ public interface OrderMapper {
      * 根据订单号更新订单状态
      */
     int updateOrderByPayed(@Param("orderNo") Long orderNo, @Param("status") Integer status);
+
+    /**
+     * 根据订单号查状态
+     */
+    int selectStatusByOrderNo(@Param("orderNo") Long orderNo);
 }
