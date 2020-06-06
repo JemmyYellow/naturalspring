@@ -25,7 +25,6 @@ public class PortalLoginCheckInterceptor implements HandlerInterceptor {
      *
      * @return true:可以通过拦截器 false:拦截请求
      */
-
     @Autowired
     LoginUserMapper loginUserMapper;
 
@@ -59,9 +58,6 @@ public class PortalLoginCheckInterceptor implements HandlerInterceptor {
                 }
             }
         }
-
-
-
         //用户未登录
         response.reset();
         response.addHeader("Content-Type", "application/json;charset=utf-8");
